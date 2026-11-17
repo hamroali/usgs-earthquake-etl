@@ -8,7 +8,7 @@ import time
 import pandas as pd
 
 from src import bronze, gold, silver
-from src.config import get_logger
+from src.config import BRONZE_KEEP_DAYS, get_logger
 
 log = get_logger()
 
@@ -39,6 +39,7 @@ def main() -> int:
         df, stats = silver.run(files)
         gold_rows = gold.build(df)
         bronze.save_state(new_state)  # faqat hammasi muvaffaqiyatli bo'lsa
+        bronze.cleanup(BRONZE_KEEP_DAYS)
         quality_report(df, stats, gold_rows)
     except Exception:
         log.exception("ETL XATO bilan tugadi")

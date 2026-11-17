@@ -3,9 +3,11 @@
 Fayllar avval .tmp ga yoziladi, keyin almashtiriladi — Power BI/OneDrive
 yarim yozilgan faylni o'qib qolmasligi uchun. Ustun nomlari va tartibi o'zgarmaydi.
 """
+from datetime import datetime, timedelta, timezone
+
 import pandas as pd
 
-from .config import GOLD_DIR, MAP_MIN_MAG, get_logger
+from .config import GOLD_DAYS, GOLD_DIR, MAP_MIN_MAG, get_logger
 
 log = get_logger()
 
@@ -19,7 +21,9 @@ def _write(df: pd.DataFrame, name: str) -> None:
 
 
 def build(silver: pd.DataFrame) -> dict:
-    eq = silver[silver["event_type"] == "earthquake"]
+    # Gold — "sirpanuvchi oyna": faqat oxirgi GOLD_DAYS kun. Silver'da esa butun tarix qoladi.
+    cutoff = (datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=GOLD_DAYS)).date()
+    eq = silver[(silver["event_type"] == "earthquake") & (silver["date"] > cutoff)]
 
     map_events = eq[eq["magnitude"] >= MAP_MIN_MAG][[
         "event_id", "time_utc", "time_tashkent", "date", "magnitude", "mag_category",
@@ -52,8 +56,15 @@ def build(silver: pd.DataFrame) -> dict:
                                      avg_magnitude=("magnitude", "mean"))
               .round(2).reindex(range(24), fill_value=0).rename_axis("hour_utc").reset_index())
 
+    # Dashboard'dagi "Oxirgi yangilanish" kartochkasi uchun
+    refresh = pd.DataFrame([{
+        "last_refresh_tashkent": (datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=5)).replace(microsecond=0),
+        "data_from": eq["date"].min(), "data_to": eq["date"].max(),
+        "window_days": GOLD_DAYS, "quakes_in_window": len(eq),
+    }])
+
     tables = {"map_events": map_events, "daily_summary": daily, "region_summary": region,
-              "top_events": top, "hourly_pattern": hourly}
+              "top_events": top, "hourly_pattern": hourly, "refresh_info": refresh}
     for name, df in tables.items():
         _write(df, name)
     return {k: len(v) for k, v in tables.items()}

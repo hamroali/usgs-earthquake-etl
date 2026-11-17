@@ -26,3 +26,6 @@ README.md ga qara.
 - Papka nomlari etl-rules.md dan farqli: raw=bronze, clean=silver, output=gold (foydalanuvchi so'rovi).
 - USGS zilzilalarni keyin tuzatadi — incremental yuklash 24 soat zaxira bilan olinadi, silver'da event_id bo'yicha oxirgi `updated` qoladi.
 - `updatedbefore` parametri API'da yo'q.
+- Retention: gold = oxirgi `GOLD_DAYS` (365) kun, CSV har safar to'liq qayta yoziladi; silver = butun tarix;
+  bronze = `BRONZE_KEEP_DAYS` (0 = o'chirilmaydi; yoqishdan oldin foydalanuvchidan so'ra).
+- GitHub: https://github.com/hamroali/usgs-earthquake-etl

@@ -18,7 +18,11 @@ GOLD_DIR = Path(os.getenv("GOLD_DIR", ROOT / "data" / "gold"))
 
 API_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
 HISTORY_DAYS = int(os.getenv("HISTORY_DAYS", "365"))  # birinchi yuklashda necha kun
-OVERLAP_HOURS = 24          # incremental yuklashda zaxira (tuzatilgan zilzilalar uchun)
+# Saqlash muddati (retention)
+GOLD_DAYS = int(os.getenv("GOLD_DAYS", "365"))              # Power BI'da oxirgi necha kun turadi
+BRONZE_KEEP_DAYS = int(os.getenv("BRONZE_KEEP_DAYS", "0"))  # 0 = bronze fayllar o'chirilmaydi
+
+OVERLAP_HOURS = 24         # incremental yuklashda zaxira (tuzatilgan zilzilalar uchun)
 MAP_MIN_MAG = 2.5           # xaritaga chiqadigan minimal magnituda
 
 # Markaziy Osiyo chegarasi (taxminiy to'rtburchak)

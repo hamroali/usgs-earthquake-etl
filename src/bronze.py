@@ -50,6 +50,19 @@ def save_state(state: dict) -> None:
     STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
 
+def cleanup(keep_days: int) -> int:
+    """keep_days kundan eski bronze fayllarni o'chiradi (0 = hech narsa o'chirilmaydi)."""
+    if keep_days <= 0:
+        return 0
+    cutoff = time.time() - keep_days * 86400
+    old = [f for f in BRONZE_DIR.glob("*_usgs_*.json") if f.stat().st_mtime < cutoff]
+    for f in old:
+        f.unlink()
+    if old:
+        log.info("Bronze tozalash: %s kundan eski %s ta fayl o'chirildi", keep_days, len(old))
+    return len(old)
+
+
 def _windows(start: datetime, end: datetime, days: int):
     cur = start
     while cur < end:
