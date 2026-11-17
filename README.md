@@ -106,7 +106,7 @@ etl-eia/
 
 | Qatlam | Qancha saqlanadi | O'zgartirish (`.env`) | Taxminiy hajm |
 |---|---|---|---|
-| 🥉 Bronze | Hammasi (o'chirilmaydi) | `BRONZE_KEEP_DAYS=90` → 90 kundan eskilari o'chiriladi | birinchi yuklash ~108 MB, keyin ~0.5 MB/kun |
+| 🥉 Bronze | Oxirgi 90 kun (eskilari avtomatik o'chiriladi) | `BRONZE_KEEP_DAYS=90` (0 = o'chirilmaydi) | ~45 MB (90 kun × ~0.5 MB) |
 | 🥈 Silver | Butun tarix | — | ~9 MB / yil |
 | 🥇 Gold | Oxirgi 365 kun | `GOLD_DAYS=730` → 2 yil | ~7 MB |
 
